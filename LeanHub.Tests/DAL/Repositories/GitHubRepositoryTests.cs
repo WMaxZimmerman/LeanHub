@@ -1,35 +1,33 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LeanHub.ApplicationCore.Services;
 using LeanHub.DAL.Repositories;
-using LeanHub.Console.Controllers;
 using Moq;
-
+using Bogus.DataSets;
 
 namespace LeanHub.Tests.DAL.Repositories
 {
     [TestClass]
     public class GitHubRepositoryTests
     {
-        private UserService _service;
-        private Mock<IGitHubRepository> _mockRepo;
+        private Mock<IGitHubApi> _mockApi;
+        private IGitHubRepository _repo;
         private Random _randy;
+        private Lorem _lorem;
 
 
         [TestInitialize]
         public void Init()
         {
             _randy = new Random();
-            _service = new UserService();
-            _mockRepo = new Mock<IGitHubRepository>();
-
-
+            _mockApi = new Mock<IGitHubApi>();
+            _repo = new GitHubRepository(_mockApi.Object);
+            _lorem = new Bogus.DataSets.Lorem(locale: "en");
         }
+
         [TestMethod]
-        public void MakeApiCall_GivenNameandMethod_ReturnsContent()
+        public void AddUserToOrg_CallsMakeApiCall_WithExpectedParameters_AndReturnsValue()
         {
-            var name = "myName";
-            var method = "myMethod";
+            var name = _lorem.Word();
             
 
         }
