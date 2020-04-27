@@ -24,7 +24,7 @@ namespace LeanHub.DAL.Repositories
         private IApiRepository _api;
         private string _baseUrl = "https://api.github.com/orgs/TestyMcTestOrg/";
 
-        public GitHubRepository(IGitHubApi githubApi = null, IApiRepository api = null)
+        public GitHubRepository(IApiRepository api = null)
         {
             _api = api ?? new ApiRepository();
         }
