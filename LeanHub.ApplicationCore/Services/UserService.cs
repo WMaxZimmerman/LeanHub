@@ -1,36 +1,43 @@
+using System.Collections.Generic;
 using LeanHub.DAL.Repositories;
+using LeanHub.Shared.Models;
 
 namespace LeanHub.ApplicationCore.Services
 {
     public interface IUserService
     {
-      
-        string AddUserToOrg(string name);
+        Member AddUserToOrg(string name, string username, string password);
 
-        string RemoveUserFromOrg(string name);
+        bool RemoveUserFromOrg(string name, string username, string password);
+
+        List<User> GetUsers(string username, string password);
     }
+
     public class UserService: IUserService
     {
         private IGitHubRepository _repo;
-        private IGitHubUserService _gitHubService;
 
-        public UserService(IGitHubRepository repo = null, IGitHubUserService gitHubUserService = null)
+        public UserService(IGitHubRepository repo = null)
         {
             _repo = repo ?? new GitHubRepository();
-
-            _gitHubService = gitHubUserService ?? new GitHubUserService();
         }        
    
-        public string AddUserToOrg(string name)
+        public Member AddUserToOrg(string name, string username, string password)
         {
-            var auth = _gitHubService.GetAdminCredentials("username:password");
+            var auth = _repo.GetCredentials(username, password);
             return _repo.AddUserToOrg(name, auth);
         }
 
-        public string RemoveUserFromOrg(string name)
+        public bool RemoveUserFromOrg(string name, string username, string password)
         {
-            var auth = _gitHubService.GetAdminCredentials("username:password");
+            var auth = _repo.GetCredentials(username, password);
             return _repo.RemoveUserFromOrg(name, auth);
+        }
+
+        public List<User> GetUsers(string username, string password)
+        {
+            var auth = _repo.GetCredentials(username, password);
+            return _repo.GetListOfUsers(auth);
         }
     }
 }
