@@ -1,6 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LeanHub.DAL.Repositories;
+using LeanHub.Shared.Models;
 using Moq;
 using Bogus.DataSets;
 using System.Net.Http.Headers;
