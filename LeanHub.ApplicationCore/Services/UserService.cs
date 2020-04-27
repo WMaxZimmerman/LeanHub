@@ -2,20 +2,35 @@ using LeanHub.DAL.Repositories;
 
 namespace LeanHub.ApplicationCore.Services
 {
-    public class UserService
+    public interface IUserService
     {
-        public static string HelloWorld()
+      
+        string AddUserToOrg(string name);
+
+        string RemoveUserFromOrg(string name);
+    }
+    public class UserService: IUserService
+    {
+        private IGitHubRepository _repo;
+        private IGitHubUserService _gitHubService;
+
+        public UserService(IGitHubRepository repo = null, IGitHubUserService gitHubUserService = null)
         {
-            return GitHubRepository.HelloWorld();
-        }
-        public static string AddUserToOrg(string name)
+            _repo = repo ?? new GitHubRepository();
+
+            _gitHubService = gitHubUserService ?? new GitHubUserService();
+        }        
+   
+        public string AddUserToOrg(string name)
         {
-            return GitHubRepository.AddUserToOrg(name);
+            var auth = _gitHubService.GetAdminCredentials("username:password");
+            return _repo.AddUserToOrg(name, auth);
         }
 
-        public static string RemoveUserFromOrg(string name)
+        public string RemoveUserFromOrg(string name)
         {
-            return GitHubRepository.RemoveUserFromOrg(name);
+            var auth = _gitHubService.GetAdminCredentials("username:password");
+            return _repo.RemoveUserFromOrg(name, auth);
         }
     }
 }
