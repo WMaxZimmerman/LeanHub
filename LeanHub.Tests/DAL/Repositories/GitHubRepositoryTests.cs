@@ -4,6 +4,8 @@ using LeanHub.DAL.Repositories;
 using Moq;
 using Bogus.DataSets;
 using System.Net.Http.Headers;
+using LeanHub.Shared.Models;
+using System.Collections.Generic;
 
 namespace LeanHub.Tests.DAL.Repositories
 {
@@ -28,45 +30,69 @@ namespace LeanHub.Tests.DAL.Repositories
         [TestMethod]
         public void AddUserToOrg_CallsMakeApiCall_WithExpectedParameters_AndReturnsValue()
         {
-            var expectedName = _lorem.Word();
+            var name = _lorem.Word();
+            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/memberships/" + name;
             var expectedMethod = "PUT";
-            var expectedResult = _lorem.Word();
+            var expectedResult = new Member();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
-            // _mockApi.Setup(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth)).Returns(expectedResult);
+            _mockApi.Setup(a => a.MakeApiCall<Member>(expectedAddress, expectedMethod, expectedAuth))
+                .Returns(expectedResult);
 
-            var actual = _repo.AddUserToOrg(expectedName, expectedAuth);
+            var actual = _repo.AddUserToOrg(name, expectedAuth);
 
-            // _mockApi.Verify(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth), Times.Once);
+            _mockApi.Verify(a => a.MakeApiCall<Member>(expectedAddress, expectedMethod, expectedAuth), Times.Once);
             Assert.AreEqual(expectedResult, actual);
         }
 
         [TestMethod]
-        public void RemoveUserFromOrg_CallsMakeApiCall_WithExpectedParameters_AndReturnsValue()
+        public void RemoveUserFromOrg_CallsMakeApiCall_WithExpectedParameters_AndReturnsTrue()
         {
-            var expectedName = _lorem.Word();
+            var name = _lorem.Word();
+            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/members/" + name;
             var expectedMethod = "DELETE";
-            var expectedResult = _lorem.Word();
+            var result = new Object();
+            var expected = true;
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
-            // _mockApi.Setup(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth)).Returns(expectedResult);
+            _mockApi.Setup(a => a.MakeApiCall<Object>(expectedAddress, expectedMethod, expectedAuth))
+                .Returns(result);
 
-            var actual = _repo.RemoveUserFromOrg(expectedName, expectedAuth);
+            var actual = _repo.RemoveUserFromOrg(name, expectedAuth);
 
-            // _mockApi.Verify(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth), Times.Once);
-            Assert.AreEqual(expectedResult, actual);
+            _mockApi.Verify(a => a.MakeApiCall<Object>(expectedAddress, expectedMethod, expectedAuth), Times.Once);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RemoveUserFromOrg_CallsMakeApiCall_WithExpectedParameters_AndReturnsFalse()
+        {
+            var name = _lorem.Word();
+            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/members/" + name;
+            var expectedMethod = "DELETE";
+            Object result = null;
+            var expected = false;
+            var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
+            _mockApi.Setup(a => a.MakeApiCall<Object>(expectedAddress, expectedMethod, expectedAuth))
+                .Returns(result);
+
+            var actual = _repo.RemoveUserFromOrg(name, expectedAuth);
+
+            _mockApi.Verify(a => a.MakeApiCall<Object>(expectedAddress, expectedMethod, expectedAuth), Times.Once);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
         public void GetListOfUsers_CallsMakeApiCall_WithExpectedParameters_AndReturnsValue()
         {
-            string expectedName = null;
+            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/members";
             var expectedMethod = "GET";
-            var expectedResult = _lorem.Word();
+            var expectedResult = new List<User>();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
-            // _mockApi.Setup(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth)).Returns(expectedResult);
+            _mockApi.Setup(a => a.MakeApiCall<List<User>>(expectedAddress, expectedMethod, expectedAuth))
+                .Returns(expectedResult);
 
             var actual = _repo.GetListOfUsers(expectedAuth);
 
-            // _mockApi.Verify(a => a.MakeApiCall(expectedName, expectedMethod, expectedAuth), Times.Once);
+            _mockApi.Verify(a => a.MakeApiCall<List<User>>(expectedAddress, expectedMethod, expectedAuth), Times.Once);
             Assert.AreEqual(expectedResult, actual);
         }
     }
