@@ -10,8 +10,8 @@ namespace LeanHub.DAL.Repositories
         T MakeApiCall<T>(string address, string method, AuthenticationHeaderValue authorization);
     }
 
-   public class ApiRepository: IApiRepository
-   {
+    public class ApiRepository: IApiRepository
+    {
         public T MakeApiCall<T>(string address, string method, AuthenticationHeaderValue authorization)
         {
             using(var client = new HttpClient()) 
