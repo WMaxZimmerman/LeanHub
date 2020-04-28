@@ -1,4 +1,5 @@
 using LeanHub.ApplicationCore.Services;
+using LeanHub.Shared.Helpers;
 using NTrospection.CLI.Attributes;
 
 namespace LeanHub.Console.Controllers
@@ -7,15 +8,18 @@ namespace LeanHub.Console.Controllers
     public class UserController
     {
         private IUserService _service;
+        private IConsoleHelper _console;
 
         public UserController()
         {
             _service = new UserService();
+            _console = new ConsoleHelper();
         }
         
-        public UserController(IUserService service)
+        public UserController(IUserService service, IConsoleHelper console)
         {
             _service = service;
+            _console = console;
         }
 
         
@@ -24,7 +28,7 @@ namespace LeanHub.Console.Controllers
         {
             var user = _service.AddUserToOrg(name, username, password);
             var message = $"{user.User.Login} ({user.State})";
-            System.Console.WriteLine(message);
+            _console.WriteLine(message);
         }
 
         [CliCommand("remove", "Removes the given user from the organization")]
@@ -34,7 +38,7 @@ namespace LeanHub.Console.Controllers
             var message = wasRemoved ?
                 $"{name} was successfully removed" :
                 $"something went wrong trying to remove {name}";
-            System.Console.WriteLine(message);
+            _console.WriteLine(message);
         }
 
         [CliCommand("list", "Outputs a list of all users in the organization")]
@@ -43,7 +47,7 @@ namespace LeanHub.Console.Controllers
             var users = _service.GetUsers(username, password);
             foreach(var user in users)
             {
-                System.Console.WriteLine(user.Login);
+                _console.WriteLine(user.Login);
             }
         }
     }

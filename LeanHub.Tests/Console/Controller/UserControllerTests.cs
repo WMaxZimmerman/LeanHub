@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LeanHub.DAL.Repositories;
 using LeanHub.Shared.Models;
+using LeanHub.Shared.Helpers;
 using Moq;
 using Bogus.DataSets;
-using System.Net.Http.Headers;
 using LeanHub.ApplicationCore.Services;
 using LeanHub.Console.Controllers;
+using System.Text;
+
 
 namespace LeanHub.Tests.Console.Controller
 {
@@ -17,9 +19,11 @@ namespace LeanHub.Tests.Console.Controller
     
         
         private Mock<IUserService> _mockService;
+        private Mock<IConsoleHelper> _mockConsole;
         private UserController _controller;
         private Random _randy;
         private Lorem _lorem;
+        
 
     
         [TestInitialize]
@@ -28,7 +32,8 @@ namespace LeanHub.Tests.Console.Controller
             _randy = new Random();
             _lorem = new Lorem(locale: "en");
             _mockService = new Mock<IUserService>();
-            _controller = new UserController(_mockService.Object);
+            _mockConsole = new Mock<IConsoleHelper>();
+            _controller = new UserController(_mockService.Object, _mockConsole.Object);
         }
 
         [TestMethod]
@@ -48,6 +53,29 @@ namespace LeanHub.Tests.Console.Controller
            
             _mockService.Verify(s => s.AddUserToOrg(name, username, password), Times.Once);
          
+        } 
+
+        [TestMethod]
+        public void AddUser_CallsConsoleHelper_WithCorrectMessage()
+        {
+            var name = _lorem.Word();
+            var username = _lorem.Word();
+            var password = _lorem.Word();
+            var user = new Member
+            {
+                State = _lorem.Word(),
+                User = new User
+                {
+                    Login = _lorem.Word()
+                }
+            };
+            var messageActual = $"{user.User.Login} ({user.State})";
+
+            _mockService.Setup(s => s.AddUserToOrg(name, username, password)).Returns(user);
+           
+            _controller.AddUser(name, username, password);
+           
+            _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
         } 
 
         [TestMethod]
@@ -71,9 +99,40 @@ namespace LeanHub.Tests.Console.Controller
         } 
 
         [TestMethod]
-        public void GetUsers_CallsGetUsersService_WithUserNameandPassword()
+        public void RemoveUser_CallsConsoleHelper_WithCorrectMessage_WhenTrue()
         {
             var name = _lorem.Word();
+            var username = _lorem.Word();
+            var password = _lorem.Word();
+            var expectedResult = true;
+            var messageActual = $"{name} was successfully removed";
+
+            _mockService.Setup(s => s.RemoveUserFromOrg(name, username, password)).Returns(expectedResult);
+           
+            _controller.RemoveUser(name, username, password);
+           
+            _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
+        } 
+
+        [TestMethod]
+        public void RemoveUser_CallsConsoleHelper_WithCorrectMessage_WhenFalse()
+        {
+            var name = _lorem.Word();
+            var username = _lorem.Word();
+            var password = _lorem.Word();
+            var expectedResult = false;
+            var messageActual = $"something went wrong trying to remove {name}";
+
+            _mockService.Setup(s => s.RemoveUserFromOrg(name, username, password)).Returns(expectedResult);
+           
+            _controller.RemoveUser(name, username, password);
+           
+            _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
+        } 
+
+        [TestMethod]
+        public void GetUsers_CallsGetUsersService_WithUserNameandPassword()
+        {
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedResult = new List<User>();
@@ -89,5 +148,43 @@ namespace LeanHub.Tests.Console.Controller
             _mockService.Verify(s => s.GetUsers(username, password), Times.Once);
          
         } 
+
+        [TestMethod]
+        public void GetUsers_CallsConsoleHelper_WhenUsersIsEmpty_ReturnsEmptyList()
+        {
+            var username = _lorem.Word();
+            var password = _lorem.Word();
+            var expectedResult = new List<User>();
+            _mockService.Setup(s => s.GetUsers(username, password)).Returns(expectedResult);
+           
+            _controller.GetUsers(username, password);
+           
+            _mockConsole.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Never);
+        } 
+
+        [TestMethod]
+        public void GetUsers_CallsConsoleHelper_WhenUsersIsNotEmpty_ReturnsUserList()
+        {
+            var username = _lorem.Word();
+            var password = _lorem.Word();
+            var expectedResult = new List<User>();
+            expectedResult.Add(GetFakeUser());
+            expectedResult.Add(GetFakeUser());
+            expectedResult.Add(GetFakeUser());
+            var expectedMessages = expectedResult.Select(u => u.Login);         
+            _mockService.Setup(s => s.GetUsers(username, password)).Returns(expectedResult);
+           
+            _controller.GetUsers(username, password);
+           
+           foreach(var message in expectedMessages)
+           {
+                _mockConsole.Verify(c => c.WriteLine(message), Times.Once);
+           }
+        }
+
+        private User GetFakeUser()
+        {
+            return new User { Login = _lorem.Word() };
+        }
     }
 }
