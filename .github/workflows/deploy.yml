@@ -21,3 +21,6 @@ jobs:
 
     - name: Build and Test Application
       run: ./infra/scripts/build.sh
+
+    - name: Run Application
+      run: ./infra/scripts/run.sh
