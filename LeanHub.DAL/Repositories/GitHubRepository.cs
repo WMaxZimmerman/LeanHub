@@ -54,6 +54,7 @@ namespace LeanHub.DAL.Repositories
         public AuthenticationHeaderValue GetCredentials()
         {
             var credString = $"{_config.Username}:{_config.Password}";
+            System.Console.WriteLine(credString);
             var byteArray = Encoding.ASCII.GetBytes(credString);
             return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }

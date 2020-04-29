@@ -23,7 +23,7 @@ namespace LeanHub.Tests.Shared.Helpers
         [TestMethod]
         public void Username_CallsGetValue_WithExpectedName_AndReturnsValue()
         {
-            var expectedName = "USERNAME";
+            var expectedName = "GITHUB_USERNAME";
             var expectedValue = _lorem.Word();
             _mockEnv.Setup(e => e.GetValue(expectedName)).Returns(expectedValue);
 
@@ -36,7 +36,7 @@ namespace LeanHub.Tests.Shared.Helpers
         [TestMethod]
         public void Password_CallsGetValue_WithExpectedName_AndReturnsValue()
         {
-            var expectedName = "PASSWORD";
+            var expectedName = "GITHUB_PASSWORD";
             var expectedValue = _lorem.Word();
             _mockEnv.Setup(e => e.GetValue(expectedName)).Returns(expectedValue);
 

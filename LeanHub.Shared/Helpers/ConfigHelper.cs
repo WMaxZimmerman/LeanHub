@@ -15,8 +15,8 @@ namespace LeanHub.Shared.Helpers
             _env = env ?? new EnvironmentHelper();
         }
         
-        public string Username => _env.GetValue("USERNAME");
+        public string Username => _env.GetValue("GITHUB_USERNAME");
 
-        public string Password => _env.GetValue("PASSWORD");
+        public string Password => _env.GetValue("GITHUB_PASSWORD");
     }
 }
