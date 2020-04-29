@@ -1,5 +1,5 @@
-GITHUB_USERNAME="$1"
-GITHUB_PASSWORD="$2"
+export GITHUB_USERNAME="$1"
+export GITHUB_PASSWORD="$2"
 
 cd LeanHub.Console
 dotnet run user list
