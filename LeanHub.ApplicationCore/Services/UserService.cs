@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using LeanHub.DAL.Repositories;
 using LeanHub.Shared.Models;
 
@@ -11,15 +12,19 @@ namespace LeanHub.ApplicationCore.Services
         bool RemoveUserFromOrg(string name, string username, string password);
 
         List<User> GetUsers(string username, string password);
+
+        List<User> GetLocalUsers();
     }
 
     public class UserService: IUserService
     {
         private IGitHubRepository _repo;
+        private ICsvRepository _csvRepo;
 
-        public UserService(IGitHubRepository repo = null)
+        public UserService(IGitHubRepository repo = null, ICsvRepository csvRepo = null)
         {
             _repo = repo ?? new GitHubRepository();
+            _csvRepo = csvRepo ?? new CsvRepository();
         }        
    
         public Member AddUserToOrg(string name, string username, string password)
@@ -38,6 +43,11 @@ namespace LeanHub.ApplicationCore.Services
         {
             var auth = _repo.GetCredentials(username, password);
             return _repo.GetListOfUsers(auth);
+        }
+
+        public List<User> GetLocalUsers()
+        {
+            return _csvRepo.GetUsers().ToList();
         }
     }
 }

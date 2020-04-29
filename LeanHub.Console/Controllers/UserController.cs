@@ -50,5 +50,15 @@ namespace LeanHub.Console.Controllers
                 _console.WriteLine(user.Login);
             }
         }
+
+        [CliCommand("local", "Outputs a list of all users in the organization")]
+        public void GetLocalUsers()
+        {
+            var users = _service.GetLocalUsers();
+            foreach(var user in users)
+            {
+                _console.WriteLine($"{user.Name} ({user.Login})");
+            }
+        }
     }
 }
