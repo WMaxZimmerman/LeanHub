@@ -7,11 +7,11 @@ namespace LeanHub.ApplicationCore.Services
 {
     public interface IUserService
     {
-        Member AddUserToOrg(string name, string username, string password);
+        Member AddUserToOrg(string name);
 
-        bool RemoveUserFromOrg(string name, string username, string password);
+        bool RemoveUserFromOrg(string name);
 
-        List<User> GetUsers(string username, string password);
+        List<User> GetUsers();
 
         List<User> GetLocalUsers();
     }
@@ -27,21 +27,21 @@ namespace LeanHub.ApplicationCore.Services
             _csvRepo = csvRepo ?? new CsvRepository();
         }        
    
-        public Member AddUserToOrg(string name, string username, string password)
+        public Member AddUserToOrg(string name)
         {
-            var auth = _repo.GetCredentials(username, password);
+            var auth = _repo.GetCredentials();
             return _repo.AddUserToOrg(name, auth);
         }
 
-        public bool RemoveUserFromOrg(string name, string username, string password)
+        public bool RemoveUserFromOrg(string name)
         {
-            var auth = _repo.GetCredentials(username, password);
+            var auth = _repo.GetCredentials();
             return _repo.RemoveUserFromOrg(name, auth);
         }
 
-        public List<User> GetUsers(string username, string password)
+        public List<User> GetUsers()
         {
-            var auth = _repo.GetCredentials(username, password);
+            var auth = _repo.GetCredentials();
             return _repo.GetListOfUsers(auth);
         }
 

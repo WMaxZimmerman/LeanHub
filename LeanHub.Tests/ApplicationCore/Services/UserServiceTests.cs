@@ -37,11 +37,11 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var password = _lorem.Word();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
 
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(expectedAuth);
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(expectedAuth);
 
-            var actual = _service.AddUserToOrg(name,username,password);
+            var actual = _service.AddUserToOrg(name);
 
-            _mockRepo.Verify(s => s.GetCredentials(username, password), Times.Once);
+            _mockRepo.Verify(s => s.GetCredentials(), Times.Once);
         }      
 
         [TestMethod]
@@ -52,13 +52,12 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var password = _lorem.Word();
             var auth = new AuthenticationHeaderValue(_lorem.Word());
             var expectedResult = new Member();
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(auth);
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(auth);
             _mockRepo.Setup(s => s.AddUserToOrg(name, auth)).Returns(expectedResult);
 
-            var actual = _service.AddUserToOrg(name, username, password);
+            var actual = _service.AddUserToOrg(name);
 
             _mockRepo.Verify(s => s.AddUserToOrg(name, auth), Times.Once); 
-
             Assert.AreEqual(expectedResult, actual);
         }
 
@@ -69,12 +68,11 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(expectedAuth);
 
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(expectedAuth);
+            var actual = _service.RemoveUserFromOrg(name);
 
-            var actual = _service.RemoveUserFromOrg(name,username,password);
-
-            _mockRepo.Verify(s => s.GetCredentials(username, password), Times.Once);
+            _mockRepo.Verify(s => s.GetCredentials(), Times.Once);
         }      
           
         [TestMethod]
@@ -85,13 +83,12 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var password = _lorem.Word();
             var auth = new AuthenticationHeaderValue(_lorem.Word());
             var expectedResult = true;
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(auth);
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(auth);
             _mockRepo.Setup(s => s.RemoveUserFromOrg(name, auth)).Returns(expectedResult);
 
-            var actual = _service.RemoveUserFromOrg(name, username, password);
+            var actual = _service.RemoveUserFromOrg(name);
 
             _mockRepo.Verify(s => s.RemoveUserFromOrg(name, auth), Times.Once); 
-
             Assert.AreEqual(expectedResult, actual);
         }
 
@@ -102,12 +99,11 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(expectedAuth);
 
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(expectedAuth);
+            var actual = _service.GetUsers();
 
-            var actual = _service.GetUsers(username,password);
-
-            _mockRepo.Verify(s => s.GetCredentials(username, password), Times.Once);
+            _mockRepo.Verify(s => s.GetCredentials(), Times.Once);
         }      
           
         [TestMethod]
@@ -118,13 +114,12 @@ namespace LeanHub.Tests.ApplicationCore.Services
             var password = _lorem.Word();
             var auth = new AuthenticationHeaderValue(_lorem.Word());
             var expectedResult = new List<User>();
-            _mockRepo.Setup(s => s.GetCredentials(username, password)).Returns(auth);
+            _mockRepo.Setup(s => s.GetCredentials()).Returns(auth);
             _mockRepo.Setup(s => s.GetListOfUsers(auth)).Returns(expectedResult);
 
-            var actual = _service.GetUsers(username, password);
+            var actual = _service.GetUsers();
 
             _mockRepo.Verify(s => s.GetListOfUsers(auth), Times.Once); 
-
             Assert.AreEqual(expectedResult, actual);
         }
     }

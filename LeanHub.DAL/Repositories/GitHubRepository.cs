@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
+using LeanHub.Shared.Helpers;
 using LeanHub.Shared.Models;
 
 namespace LeanHub.DAL.Repositories
@@ -16,17 +17,19 @@ namespace LeanHub.DAL.Repositories
 
         List<User> GetListOfUsers(AuthenticationHeaderValue authorization);
 
-        AuthenticationHeaderValue GetCredentials(string username, string password);
+        AuthenticationHeaderValue GetCredentials();
     }
 
     public class GitHubRepository: IGitHubRepository
     {
         private IApiRepository _api;
+        private IConfigHelper _config;
         private string _baseUrl = "https://api.github.com/orgs/TestyMcTestOrg/";
 
-        public GitHubRepository(IApiRepository api = null)
+        public GitHubRepository(IApiRepository api = null, IConfigHelper config = null)
         {
             _api = api ?? new ApiRepository();
+            _config = config ?? new ConfigHelper();
         }
 
         public Member AddUserToOrg(string name, AuthenticationHeaderValue authorization)
@@ -48,9 +51,9 @@ namespace LeanHub.DAL.Repositories
             return _api.MakeApiCall<List<User>>(url, "GET", authorization);
         }
 
-        public AuthenticationHeaderValue GetCredentials(string username, string password)
+        public AuthenticationHeaderValue GetCredentials()
         {
-            var credString = $"{username}:{password}";
+            var credString = $"{_config.Username}:{_config.Password}";
             var byteArray = Encoding.ASCII.GetBytes(credString);
             return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }

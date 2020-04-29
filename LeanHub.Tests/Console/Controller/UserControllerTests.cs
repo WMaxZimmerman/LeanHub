@@ -8,7 +8,6 @@ using Moq;
 using Bogus.DataSets;
 using LeanHub.ApplicationCore.Services;
 using LeanHub.Console.Controllers;
-using System.Text;
 
 
 namespace LeanHub.Tests.Console.Controller
@@ -16,16 +15,12 @@ namespace LeanHub.Tests.Console.Controller
     [TestClass]
     public class UserControllerTests
     {
-    
-        
         private Mock<IUserService> _mockService;
         private Mock<IConsoleHelper> _mockConsole;
         private UserController _controller;
         private Random _randy;
         private Lorem _lorem;
-        
-
-    
+            
         [TestInitialize]
         public void Init()
         {
@@ -42,16 +37,12 @@ namespace LeanHub.Tests.Console.Controller
             var name = _lorem.Word();
             var username = _lorem.Word();
             var password = _lorem.Word();
-            var user = new Member
-            {
-                User = new User()
-            };
+            var user = GetFakeMember();
+            _mockService.Setup(s => s.AddUserToOrg(name)).Returns(user);
 
-            _mockService.Setup(s => s.AddUserToOrg(name, username, password)).Returns(user);
-
-            _controller.AddUser(name, username, password);
+            _controller.AddUser(name);
            
-            _mockService.Verify(s => s.AddUserToOrg(name, username, password), Times.Once);
+            _mockService.Verify(s => s.AddUserToOrg(name), Times.Once);
          
         } 
 
@@ -61,19 +52,11 @@ namespace LeanHub.Tests.Console.Controller
             var name = _lorem.Word();
             var username = _lorem.Word();
             var password = _lorem.Word();
-            var user = new Member
-            {
-                State = _lorem.Word(),
-                User = new User
-                {
-                    Login = _lorem.Word()
-                }
-            };
+            var user = GetFakeMember();
             var messageActual = $"{user.User.Login} ({user.State})";
-
-            _mockService.Setup(s => s.AddUserToOrg(name, username, password)).Returns(user);
+            _mockService.Setup(s => s.AddUserToOrg(name)).Returns(user);
            
-            _controller.AddUser(name, username, password);
+            _controller.AddUser(name);
            
             _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
         } 
@@ -85,16 +68,12 @@ namespace LeanHub.Tests.Console.Controller
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedResult = false;
-            var user = new Member
-            {
-                User = new User()
-            };
+            var user = GetFakeMember();
+            _mockService.Setup(s => s.RemoveUserFromOrg(name)).Returns(expectedResult);
 
-            _mockService.Setup(s => s.RemoveUserFromOrg(name, username, password)).Returns(expectedResult);
-
-            _controller.RemoveUser(name, username, password);
+            _controller.RemoveUser(name);
            
-            _mockService.Verify(s => s.RemoveUserFromOrg(name, username, password), Times.Once);
+            _mockService.Verify(s => s.RemoveUserFromOrg(name), Times.Once);
          
         } 
 
@@ -106,10 +85,9 @@ namespace LeanHub.Tests.Console.Controller
             var password = _lorem.Word();
             var expectedResult = true;
             var messageActual = $"{name} was successfully removed";
-
-            _mockService.Setup(s => s.RemoveUserFromOrg(name, username, password)).Returns(expectedResult);
+            _mockService.Setup(s => s.RemoveUserFromOrg(name)).Returns(expectedResult);
            
-            _controller.RemoveUser(name, username, password);
+            _controller.RemoveUser(name);
            
             _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
         } 
@@ -122,10 +100,9 @@ namespace LeanHub.Tests.Console.Controller
             var password = _lorem.Word();
             var expectedResult = false;
             var messageActual = $"something went wrong trying to remove {name}";
-
-            _mockService.Setup(s => s.RemoveUserFromOrg(name, username, password)).Returns(expectedResult);
+            _mockService.Setup(s => s.RemoveUserFromOrg(name)).Returns(expectedResult);
            
-            _controller.RemoveUser(name, username, password);
+            _controller.RemoveUser(name);
            
             _mockConsole.Verify(c => c.WriteLine(messageActual), Times.Once);
         } 
@@ -136,16 +113,12 @@ namespace LeanHub.Tests.Console.Controller
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedResult = new List<User>();
-            var user = new Member
-            {
-                User = new User()
-            };
+            var user = GetFakeMember();
+            _mockService.Setup(s => s.GetUsers()).Returns(expectedResult);
 
-            _mockService.Setup(s => s.GetUsers(username, password)).Returns(expectedResult);
-
-            _controller.GetUsers(username, password);
+            _controller.GetUsers();
            
-            _mockService.Verify(s => s.GetUsers(username, password), Times.Once);
+            _mockService.Verify(s => s.GetUsers(), Times.Once);
          
         } 
 
@@ -155,9 +128,9 @@ namespace LeanHub.Tests.Console.Controller
             var username = _lorem.Word();
             var password = _lorem.Word();
             var expectedResult = new List<User>();
-            _mockService.Setup(s => s.GetUsers(username, password)).Returns(expectedResult);
+            _mockService.Setup(s => s.GetUsers()).Returns(expectedResult);
            
-            _controller.GetUsers(username, password);
+            _controller.GetUsers();
            
             _mockConsole.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Never);
         } 
@@ -172,14 +145,23 @@ namespace LeanHub.Tests.Console.Controller
             expectedResult.Add(GetFakeUser());
             expectedResult.Add(GetFakeUser());
             var expectedMessages = expectedResult.Select(u => u.Login);         
-            _mockService.Setup(s => s.GetUsers(username, password)).Returns(expectedResult);
+            _mockService.Setup(s => s.GetUsers()).Returns(expectedResult);
            
-            _controller.GetUsers(username, password);
+            _controller.GetUsers();
            
            foreach(var message in expectedMessages)
            {
                 _mockConsole.Verify(c => c.WriteLine(message), Times.Once);
            }
+        }
+
+        private Member GetFakeMember()
+        {
+            return new Member
+            {
+                State = _lorem.Word(),
+                User = GetFakeUser()
+            };
         }
 
         private User GetFakeUser()

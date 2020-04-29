@@ -5,8 +5,8 @@ using LeanHub.Shared.Models;
 using Moq;
 using Bogus.DataSets;
 using System.Net.Http.Headers;
-using LeanHub.Shared.Models;
 using System.Collections.Generic;
+using LeanHub.Shared.Helpers;
 
 namespace LeanHub.Tests.DAL.Repositories
 {
@@ -14,6 +14,7 @@ namespace LeanHub.Tests.DAL.Repositories
     public class GitHubRepositoryTests
     {
         private Mock<IApiRepository> _mockApi;
+        private Mock<IConfigHelper> _mockConfig;
         private IGitHubRepository _repo;
         private Random _randy;
         private Lorem _lorem;
@@ -24,7 +25,8 @@ namespace LeanHub.Tests.DAL.Repositories
         {
             _randy = new Random();
             _mockApi = new Mock<IApiRepository>();
-            _repo = new GitHubRepository(_mockApi.Object);
+            _mockConfig = new Mock<IConfigHelper>();
+            _repo = new GitHubRepository(_mockApi.Object, _mockConfig.Object);
             _lorem = new Lorem(locale: "en");
         }
 
@@ -95,6 +97,15 @@ namespace LeanHub.Tests.DAL.Repositories
 
             _mockApi.Verify(a => a.MakeApiCall<List<User>>(expectedAddress, expectedMethod, expectedAuth), Times.Once);
             Assert.AreEqual(expectedResult, actual);
+        }
+
+        [TestMethod]
+        public void GetCredentials_CallsUsernameAndPassword_OnConfig()
+        {
+            var actual = _repo.GetCredentials();
+
+            _mockConfig.Verify(c => c.Username, Times.Once);
+            _mockConfig.Verify(c => c.Password, Times.Once);
         }
     }
 }
