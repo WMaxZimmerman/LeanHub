@@ -20,7 +20,7 @@ jobs:
       run: sudo chmod +x ./infra/scripts/*
 
     - name: Build and Test Application
-      run: ./infra/scripts/build.sh
+      run: .src/infra/scripts/build.sh
 
     - name: Run Application
-      run: ./infra/scripts/run.sh ${{ secrets.GITHUBUSERNAME }} ${{ secrets.GITHUBPASSWORD }}
+      run: .src/infra/scripts/run.sh ${{ secrets.GITHUBUSERNAME }} ${{ secrets.GITHUBPASSWORD }}

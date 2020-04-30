@@ -14,7 +14,7 @@ namespace LeanHub.DAL.Repositories
     {
         public IEnumerable<User> GetUsers()
         {
-            var filePath = "../users.csv";
+            var filePath = "../../users.csv";
             var lines = File.ReadLines(filePath).ToList();
             var users = new List<User>();
 
