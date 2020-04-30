@@ -1,2 +1,24 @@
-Snackm1x
-WMaxZimmerman
+#+TITLE: Lean Hub (User)
+
+* Description
+Welcome to Lean Hub! This is a repository to manage the members of the Lean TECHniques GitHub organization. That's It!
+Nothing crazy just a simple user manager. The rest of this document will coverage usage if you are wanting documentation
+on helping to develop Lean Hub you can go [[file:src/readme.org][here]].
+
+* Usage
+- [[file:users.csv][users.csv]]
+  To manage the users of the organization we have created the users.csv file. This file is the source of truth for who
+  is in the organization. After going to this link you will be able to see a 'pencil' icon. If you click this icon you
+  will be able to edit the file. After editing the file you will need to commit your changes for them to take place. To
+  do that you only need to scroll to the bottom of the page and fill out the information about what was changed, and
+  then click the button to commit to 'master'.
+- Add User
+  To add a user you just need to add a new entry to the csv file. The first column will be their name; this is just used
+  to help you keep track of real life names to usernames. The second column is the GitHub username. This must match what
+  the persons GitHub username is.
+- Remove User
+  To remove a user you only need to remove their line from the csv.
+
+I know what you are thinking, "Wow, that is really simple! How did something so amazing ever get created?". We
+understand your confusion and praise, but this is just what we do. It is unlikely (because it is so simple), but if you
+have further questions on usage please reach out. We are always happy to help.
