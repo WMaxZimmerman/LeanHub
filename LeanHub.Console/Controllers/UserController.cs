@@ -8,18 +8,21 @@ namespace LeanHub.Console.Controllers
     public class UserController
     {
         private IUserService _service;
+        private ISyncService _syncService;
         private IConsoleHelper _console;
 
         public UserController()
         {
             _service = new UserService();
             _console = new ConsoleHelper();
+            _syncService = new SyncService();
         }
         
-        public UserController(IUserService service, IConsoleHelper console)
+        public UserController(IUserService service, IConsoleHelper console, ISyncService syncService)
         {
             _service = service;
             _console = console;
+            _syncService = syncService;
         }
 
         
@@ -59,6 +62,12 @@ namespace LeanHub.Console.Controllers
             {
                 _console.WriteLine($"{user.Name} ({user.Login})");
             }
+        }
+
+        [CliCommand("sync", "Syncs the users in the Org with the users in the CSV.")]
+        public void SyncUsers()
+        {
+            _syncService.SyncUsers();
         }
     }
 }

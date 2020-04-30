@@ -17,6 +17,7 @@ namespace LeanHub.Tests.Console.Controller
     {
         private Mock<IUserService> _mockService;
         private Mock<IConsoleHelper> _mockConsole;
+        private Mock<ISyncService> _mockSyncService;
         private UserController _controller;
         private Random _randy;
         private Lorem _lorem;
@@ -28,7 +29,8 @@ namespace LeanHub.Tests.Console.Controller
             _lorem = new Lorem(locale: "en");
             _mockService = new Mock<IUserService>();
             _mockConsole = new Mock<IConsoleHelper>();
-            _controller = new UserController(_mockService.Object, _mockConsole.Object);
+            _mockSyncService = new Mock<ISyncService>();
+            _controller = new UserController(_mockService.Object, _mockConsole.Object, _mockSyncService.Object);
         }
 
         [TestMethod]
@@ -153,6 +155,14 @@ namespace LeanHub.Tests.Console.Controller
            {
                 _mockConsole.Verify(c => c.WriteLine(message), Times.Once);
            }
+        }
+
+        [TestMethod]
+        public void SyncUsers_CallsSyncUsers_OnSyncService()
+        {
+            _controller.SyncUsers();
+
+            _mockSyncService.Verify(ss => ss.SyncUsers(), Times.Once);
         }
 
         private Member GetFakeMember()

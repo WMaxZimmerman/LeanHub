@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using LeanHub.DAL.Repositories;
 using LeanHub.Shared.Models;
 
@@ -24,8 +25,25 @@ namespace LeanHub.ApplicationCore.Services
         {
             var comparedUsers = new List<ComparedUser>();
             var localUsers = _csvRepo.GetUsers();
-            var auth = _hubRepo.GetCredentials();
-            var orgUsers = _hubRepo.GetListOfUsers(auth);
+            var orgUsers = _hubRepo.GetListOfUsers(_hubRepo.GetCredentials());
+
+            var usersToRemove = orgUsers.Where(u => !localUsers.Any(lu => lu.Login == u.Login))
+                .Select(u => new ComparedUser
+                {
+                    Login = u.Login,
+                    Name = u.Name,
+                    Action = LeanHub.Shared.Enums.Action.Remove
+                }).ToList();
+            comparedUsers.AddRange(usersToRemove);
+
+            var usersToAdd = localUsers.Where(u => !orgUsers.Any(ou => ou.Login == u.Login))
+                .Select(u => new ComparedUser
+                {
+                    Login = u.Login,
+                    Name = u.Name,
+                    Action = LeanHub.Shared.Enums.Action.Add
+                }).ToList();
+            comparedUsers.AddRange(usersToAdd);
             
             return comparedUsers;
         }
