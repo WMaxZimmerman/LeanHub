@@ -86,7 +86,7 @@ namespace LeanHub.Tests.DAL.Repositories
         [TestMethod]
         public void GetListOfUsers_CallsMakeApiCall_WithExpectedParameters_AndReturnsValue()
         {
-            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/members";
+            var expectedAddress = "https://api.github.com/orgs/TestyMcTestOrg/members?role=member";
             var expectedMethod = "GET";
             var expectedResult = new List<User>();
             var expectedAuth = new AuthenticationHeaderValue(_lorem.Word());

@@ -47,7 +47,7 @@ namespace LeanHub.DAL.Repositories
 
         public List<User> GetListOfUsers(AuthenticationHeaderValue authorization)
         {
-            var url = _baseUrl + "members";
+            var url = _baseUrl + "members?role=member";
             return _api.MakeApiCall<List<User>>(url, "GET", authorization);
         }
 
